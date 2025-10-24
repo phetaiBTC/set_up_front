@@ -1,345 +1,672 @@
-import {
-  mkdirSync,
-  writeFileSync,
-  existsSync,
-  readFileSync,
-  appendFileSync,
-} from "fs";
-import { join } from "path";
+#!/usr/bin/env node
+import { mkdir, writeFile } from 'fs/promises'
+import { join } from 'path'
+import { existsSync } from 'fs'
 
-const featureName = process.argv[2];
+// Get feature name from command line arguments
+const featureName = process.argv[2]
 
 if (!featureName) {
-  console.error(
-    "❌ Please provide a feature name. Example: pnpm run make:feature users"
-  );
-  process.exit(1);
+  console.error('❌ Error: Feature name is required')
+  console.log('Usage: pnpm make:feature <feature-name>')
+  console.log('Example: pnpm make:feature users')
+  process.exit(1)
 }
 
-const baseDir = join(process.cwd(), "features", featureName);
-if (existsSync(baseDir)) {
-  console.error(`⚠️ Feature "${featureName}" already exists.`);
-  process.exit(1);
+// Validate feature name
+if (!/^[a-z][a-z0-9-]*$/.test(featureName)) {
+  console.error('❌ Error: Feature name must be lowercase, start with a letter, and can contain hyphens')
+  process.exit(1)
 }
 
-const dirs = [
-  "presentation/components",
-  "presentation/pages",
-  "presentation/composables",
-  "application",
-  "domain",
-  "infrastructure",
-];
-
-dirs.forEach((dir) => mkdirSync(join(baseDir, dir), { recursive: true }));
-
-// utils
-function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-function singular(str: string) {
-  return str.endsWith("s") ? str.slice(0, -1) : str;
+// Helper functions
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
+const pascalCase = (str: string) =>
+  str
+    .split('-')
+    .map(capitalize)
+    .join('')
+const camelCase = (str: string) => {
+  const pascal = pascalCase(str)
+  return pascal.charAt(0).toLowerCase() + pascal.slice(1)
 }
 
-const entityName = capitalize(singular(featureName));
+const featurePath = join(process.cwd(), 'features', featureName)
 
-// ---------- Domain Layer ----------
-
-writeFileSync(
-  join(baseDir, "domain", `${featureName}.entity.ts`),
-  `export interface ${entityName} {
-  id: number
-  name: string
+// Check if feature already exists
+if (existsSync(featurePath)) {
+  console.error(`❌ Error: Feature "${featureName}" already exists`)
+  process.exit(1)
 }
-`
-);
 
-writeFileSync(
-  join(baseDir, "domain", `${featureName}.schema.ts`),
-  `import { z } from 'zod'
+// Template generators
+const generateSchemaTemplate = (name: string) => {
+  const pascalName = pascalCase(name)
+  return `import { z } from 'zod'
 
-export const ${entityName}Schema = z.object({
-  id: z.number(),
-  name: z.string().min(2),
+export const ${pascalName}Schema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(2).max(100),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
 })
 
-export const Create${entityName}Schema = ${entityName}Schema.omit({ id: true })
-export const Update${entityName}Schema = ${entityName}Schema.partial()
+export const Create${pascalName}Schema = ${pascalName}Schema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+})
+
+export const Update${pascalName}Schema = Create${pascalName}Schema.partial()
 `
-);
+}
 
-// ---------- Infrastructure Layer ----------
+const generateDtoTemplate = (name: string) => {
+  const pascalName = pascalCase(name)
+  return `import type { z } from 'zod'
+import { ${pascalName}Schema, Create${pascalName}Schema, Update${pascalName}Schema } from './${name}.schema'
 
-writeFileSync(
-  join(baseDir, "infrastructure", `${featureName}.repository.ts`),
-  `import { useApi } from '~/composables/useApi''
-import { ${entityName}Schema, Create${entityName}Schema, Update${entityName}Schema } from '../domain/${featureName}.schema'
+export type ${pascalName} = z.infer<typeof ${pascalName}Schema>
+export type Create${pascalName}Dto = z.infer<typeof Create${pascalName}Schema>
+export type Update${pascalName}Dto = z.infer<typeof Update${pascalName}Schema>
+`
+}
+
+const generateServiceTemplate = (name: string) => {
+  const pascalName = pascalCase(name)
+  return `import type { ${pascalName}, Create${pascalName}Dto, Update${pascalName}Dto } from '../schemas/${name}.dto'
+import { ${pascalName}Schema } from '../schemas/${name}.schema'
+import { apiClient } from '~/shared/utils/http'
 import { z } from 'zod'
 
-const api = useApi()
+export class ${pascalName}Service {
+  private readonly baseUrl = '/api/${name}'
 
-export const ${featureName}Repository = {
-  async findAll() {
-    const res = await api.get('/${featureName}')
-    return z.array(${entityName}Schema).parse(res.data)
-  },
+  async getAll(): Promise<${pascalName}[]> {
+    const response = await apiClient.get<${pascalName}[]>(this.baseUrl)
+    return z.array(${pascalName}Schema).parse(response)
+  }
 
-  async findById(id: number) {
-    const res = await api.get(\`/${featureName}/\${id}\`)
-    return ${entityName}Schema.parse(res.data)
-  },
+  async getById(id: string): Promise<${pascalName}> {
+    const response = await apiClient.get<${pascalName}>(\`\${this.baseUrl}/\${id}\`)
+    return ${pascalName}Schema.parse(response)
+  }
 
-  async create(payload: z.infer<typeof Create${entityName}Schema>) {
-    const res = await api.post('/${featureName}', payload)
-    return ${entityName}Schema.parse(res.data)
-  },
+  async create(data: Create${pascalName}Dto): Promise<${pascalName}> {
+    const response = await apiClient.post<${pascalName}>(this.baseUrl, data)
+    return ${pascalName}Schema.parse(response)
+  }
 
-  async update(id: number, payload: z.infer<typeof Update${entityName}Schema>) {
-    const res = await api.patch(\`/${featureName}/\${id}\`, payload)
-    return ${entityName}Schema.parse(res.data)
-  },
+  async update(id: string, data: Update${pascalName}Dto): Promise<${pascalName}> {
+    const response = await apiClient.patch<${pascalName}>(\`\${this.baseUrl}/\${id}\`, data)
+    return ${pascalName}Schema.parse(response)
+  }
 
-  async remove(id: number) {
-    await api.delete(\`/${featureName}/\${id}\`)
-    return true
-  },
+  async delete(id: string): Promise<void> {
+    await apiClient.delete(\`\${this.baseUrl}/\${id}\`)
+  }
 }
+
+export const ${camelCase(name)}Service = new ${pascalName}Service()
 `
-);
+}
 
-// ---------- Application Layer ----------
+const generateStoreTemplate = (name: string) => {
+  const pascalName = pascalCase(name)
+  const camelName = camelCase(name)
+  return `import { defineStore } from 'pinia'
+import type { ${pascalName} } from '../schemas/${name}.dto'
 
-const useCases = [
-  ["get", "findAll"],
-  ["create", "create"],
-  ["update", "update"],
-  ["delete", "remove"],
-];
+export const use${pascalName}Store = defineStore('${camelName}', () => {
+  // State
+  const items = ref<${pascalName}[]>([])
+  const currentItem = ref<${pascalName} | null>(null)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
-useCases.forEach(([action, method]) => {
-  const className = `${capitalize(action)}${entityName}UseCase`;
-  const fileName = `${action}-${featureName}.usecase.ts`;
-  const methodArg =
-    action === "get"
-      ? ""
-      : action === "delete"
-      ? "id: number"
-      : action === "update"
-      ? "id: number, data: any"
-      : "data: any";
+  // Getters
+  const getById = computed(() => {
+    return (id: string) => items.value.find(item => item.id === id)
+  })
 
-  const callArg =
-    action === "get"
-      ? ""
-      : action === "delete"
-      ? "id"
-      : action === "update"
-      ? "id, data"
-      : "data";
+  const total = computed(() => items.value.length)
 
-  writeFileSync(
-    join(baseDir, "application", fileName),
-    `import { ${featureName}Repository } from '../infrastructure/${featureName}.repository'
-import type { ${entityName} } from '../domain/${featureName}.entity'
+  // Actions
+  function setItems(newItems: ${pascalName}[]) {
+    items.value = newItems
+  }
 
-export class ${className} {
-  async execute(${methodArg}): Promise<any> {
-    return await ${featureName}Repository.${method}(${callArg})
+  function addItem(item: ${pascalName}) {
+    items.value.push(item)
+  }
+
+  function updateItem(id: string, data: Partial<${pascalName}>) {
+    const index = items.value.findIndex(item => item.id === id)
+    if (index !== -1) {
+      items.value[index] = { ...items.value[index], ...data }
+    }
+  }
+
+  function removeItem(id: string) {
+    items.value = items.value.filter(item => item.id !== id)
+  }
+
+  function setCurrentItem(item: ${pascalName} | null) {
+    currentItem.value = item
+  }
+
+  function setLoading(value: boolean) {
+    loading.value = value
+  }
+
+  function setError(message: string | null) {
+    error.value = message
+  }
+
+  function reset() {
+    items.value = []
+    currentItem.value = null
+    loading.value = false
+    error.value = null
+  }
+
+  return {
+    // State
+    items,
+    currentItem,
+    loading,
+    error,
+    // Getters
+    getById,
+    total,
+    // Actions
+    setItems,
+    addItem,
+    updateItem,
+    removeItem,
+    setCurrentItem,
+    setLoading,
+    setError,
+    reset,
+  }
+})
+`
+}
+
+const generateComposableTemplate = (name: string) => {
+  const pascalName = pascalCase(name)
+  const camelName = camelCase(name)
+  return `import { ${camelName}Service } from '../services/${name}.service'
+import { use${pascalName}Store } from '../stores/use${pascalName}Store'
+import type { Create${pascalName}Dto, Update${pascalName}Dto } from '../schemas/${name}.dto'
+
+export const use${pascalName}s = () => {
+  const store = use${pascalName}Store()
+
+  // Fetch all items
+  const fetchAll = async () => {
+    try {
+      store.setLoading(true)
+      store.setError(null)
+      const items = await ${camelName}Service.getAll()
+      store.setItems(items)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to fetch ${name}'
+      store.setError(message)
+      throw err
+    } finally {
+      store.setLoading(false)
+    }
+  }
+
+  // Fetch by ID
+  const fetchById = async (id: string) => {
+    try {
+      store.setLoading(true)
+      store.setError(null)
+      const item = await ${camelName}Service.getById(id)
+      store.setCurrentItem(item)
+      return item
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to fetch ${name}'
+      store.setError(message)
+      throw err
+    } finally {
+      store.setLoading(false)
+    }
+  }
+
+  // Create new item
+  const create = async (data: Create${pascalName}Dto) => {
+    try {
+      store.setLoading(true)
+      const newItem = await ${camelName}Service.create(data)
+      store.addItem(newItem)
+      return newItem
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to create ${name}'
+      throw err
+    } finally {
+      store.setLoading(false)
+    }
+  }
+
+  // Update item
+  const update = async (id: string, data: Update${pascalName}Dto) => {
+    try {
+      store.setLoading(true)
+      const updated = await ${camelName}Service.update(id, data)
+      store.updateItem(id, updated)
+      return updated
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update ${name}'
+      throw err
+    } finally {
+      store.setLoading(false)
+    }
+  }
+
+  // Delete item
+  const remove = async (id: string) => {
+    try {
+      store.setLoading(true)
+      await ${camelName}Service.delete(id)
+      store.removeItem(id)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete ${name}'
+      throw err
+    } finally {
+      store.setLoading(false)
+    }
+  }
+
+  return {
+    // State
+    items: computed(() => store.items),
+    currentItem: computed(() => store.currentItem),
+    loading: computed(() => store.loading),
+    error: computed(() => store.error),
+    // Getters
+    getById: store.getById,
+    total: computed(() => store.total),
+    // Actions
+    fetchAll,
+    fetchById,
+    create,
+    update,
+    remove,
   }
 }
 `
-  );
-});
-
-// ---------- Presentation Layer ----------
-
-// Pinia Store
-writeFileSync(
-  join(baseDir, "presentation/composables", `use${entityName}Store.ts`),
-  `import { defineStore } from 'pinia'
-import { Get${entityName}UseCase } from '../../application/get-${featureName}.usecase'
-import { Create${entityName}UseCase } from '../../application/create-${featureName}.usecase'
-import { Update${entityName}UseCase } from '../../application/update-${featureName}.usecase'
-import { Delete${entityName}UseCase } from '../../application/delete-${featureName}.usecase'
-import type { ${entityName} } from '../../domain/${featureName}.entity'
-
-export const use${entityName}Store = defineStore('${featureName}', {
-  state: () => ({
-    items: [] as ${entityName}[],
-    loading: false,
-  }),
-  actions: {
-    async fetchAll() {
-      this.loading = true
-      try {
-        const usecase = new Get${entityName}UseCase()
-        this.items = await usecase.execute()
-      } finally {
-        this.loading = false
-      }
-    },
-    async create(data: Partial<${entityName}>) {
-      const usecase = new Create${entityName}UseCase()
-      await usecase.execute(data)
-      await this.fetchAll()
-    },
-    async update(id: number, data: Partial<${entityName}>) {
-      const usecase = new Update${entityName}UseCase()
-      await usecase.execute(id, data)
-      await this.fetchAll()
-    },
-    async remove(id: number) {
-      const usecase = new Delete${entityName}UseCase()
-      await usecase.execute(id)
-      await this.fetchAll()
-    },
-  },
-})
-`
-);
-
-// Pages
-
-writeFileSync(
-  join(baseDir, "presentation/pages", "index.vue"),
-  `<script setup lang="ts">
-import { use${entityName}Store } from '../composables/use${entityName}Store'
-const store = use${entityName}Store()
-onMounted(() => store.fetchAll())
-</script>
-
-<template>
-  <div class="p-4">
-    <h1>${entityName} List</h1>
-    <NuxtLink to="/${featureName}/create" class="text-blue-500">+ Create</NuxtLink>
-    <ul>
-      <li v-for="item in store.items" :key="item.id">
-        <NuxtLink :to="'/${featureName}/' + item.id">{{ item.name }}</NuxtLink>
-      </li>
-    </ul>
-  </div>
-</template>
-`
-);
-
-writeFileSync(
-  join(baseDir, "presentation/pages", "create.vue"),
-  `<script setup lang="ts">
-import { ref } from 'vue'
-import { use${entityName}Store } from '../composables/use${entityName}Store'
-const store = use${entityName}Store()
-const form = ref({ name: '' })
-
-const submit = async () => {
-  await store.create(form.value)
-  navigateTo('/${featureName}')
 }
+
+const generateCardComponentTemplate = (name: string) => {
+  const pascalName = pascalCase(name)
+  return `<script setup lang="ts">
+import type { ${pascalName} } from '../schemas/${name}.dto'
+
+const props = defineProps<{
+  item: ${pascalName}
+}>()
+
+const emit = defineEmits<{
+  edit: [id: string]
+  delete: [id: string]
+}>()
 </script>
 
 <template>
-  <div class="p-4">
-    <h1>Create ${entityName}</h1>
-    <form @submit.prevent="submit" class="flex flex-col gap-2">
-      <input v-model="form.name" placeholder="Name" class="border p-2 rounded"/>
-      <button class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
-    </form>
+  <div class="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+    <h3 class="text-lg font-semibold mb-2">{{ item.name }}</h3>
+    
+    <div class="text-sm text-gray-500 mb-4">
+      <p>ID: {{ item.id }}</p>
+      <p>Created: {{ new Date(item.createdAt).toLocaleDateString() }}</p>
+    </div>
+
+    <div class="flex gap-2">
+      <button 
+        @click="emit('edit', item.id)"
+        class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Edit
+      </button>
+      <button 
+        @click="emit('delete', item.id)"
+        class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+      >
+        Delete
+      </button>
+    </div>
   </div>
 </template>
 `
-);
+}
 
-writeFileSync(
-  join(baseDir, "presentation/pages", "[id].vue"),
-  `<script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute, navigateTo } from '#app'
-import { use${entityName}Store } from '../composables/use${entityName}Store'
-const store = use${entityName}Store()
-const route = useRoute()
-const id = Number(route.params.id)
-const form = ref({ name: '' })
+const generateListComponentTemplate = (name: string) => {
+  const pascalName = pascalCase(name)
+  return `<script setup lang="ts">
+import type { ${pascalName} } from '../schemas/${name}.dto'
+import ${pascalName}Card from './${pascalName}Card.vue'
 
-onMounted(async () => {
-  await store.fetchAll()
-  const item = store.items.find((x) => x.id === id)
-  if (item) form.value = { ...item }
+defineProps<{
+  items: ${pascalName}[]
+}>()
+
+const emit = defineEmits<{
+  edit: [id: string]
+  delete: [id: string]
+}>()
+</script>
+
+<template>
+  <div>
+    <div v-if="items.length === 0" class="text-center py-8 text-gray-500">
+      No items found
+    </div>
+
+    <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <${pascalName}Card
+        v-for="item in items"
+        :key="item.id"
+        :item="item"
+        @edit="emit('edit', $event)"
+        @delete="emit('delete', $event)"
+      />
+    </div>
+  </div>
+</template>
+`
+}
+
+const generateFormComponentTemplate = (name: string) => {
+  const pascalName = pascalCase(name)
+  return `<script setup lang="ts">
+import type { Create${pascalName}Dto } from '../schemas/${name}.dto'
+
+const props = defineProps<{
+  initialData?: Partial<Create${pascalName}Dto>
+  loading?: boolean
+}>()
+
+const emit = defineEmits<{
+  submit: [data: Create${pascalName}Dto]
+  cancel: []
+}>()
+
+const formData = reactive<Create${pascalName}Dto>({
+  name: props.initialData?.name || '',
 })
 
-const update = async () => {
-  await store.update(id, form.value)
-  navigateTo('/${featureName}')
-}
-
-const remove = async () => {
-  await store.remove(id)
-  navigateTo('/${featureName}')
+const handleSubmit = () => {
+  emit('submit', { ...formData })
 }
 </script>
 
 <template>
-  <div class="p-4">
-    <h1>Edit ${entityName}</h1>
-    <form @submit.prevent="update" class="flex flex-col gap-2">
-      <input v-model="form.name" placeholder="Name" class="border p-2 rounded"/>
-      <div class="flex gap-2">
-        <button class="bg-green-500 text-white px-4 py-2 rounded">Update</button>
-        <button @click.prevent="remove" class="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
-      </div>
-    </form>
+  <form @submit.prevent="handleSubmit" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium mb-1">
+        Name
+      </label>
+      <input
+        v-model="formData.name"
+        type="text"
+        required
+        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    <div class="flex gap-2">
+      <button
+        type="submit"
+        :disabled="loading"
+        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+      >
+        {{ loading ? 'Saving...' : 'Save' }}
+      </button>
+      <button
+        type="button"
+        @click="emit('cancel')"
+        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</template>
+`
+}
+
+const generateTypesTemplate = (name: string) => {
+  return `// Additional types for ${name} feature
+// Add custom types here if needed
+
+export interface ${pascalCase(name)}Filters {
+  search?: string
+  sortBy?: 'name' | 'createdAt'
+  sortOrder?: 'asc' | 'desc'
+}
+
+export interface ${pascalCase(name)}Stats {
+  total: number
+  active: number
+  inactive: number
+}
+`
+}
+
+const generateUtilsTemplate = (name: string) => {
+  const pascalName = pascalCase(name)
+  return `import type { ${pascalName} } from '../schemas/${name}.dto'
+
+/**
+ * Format ${name} display name
+ */
+export const format${pascalName}Name = (item: ${pascalName}): string => {
+  return item.name
+}
+
+/**
+ * Sort ${name} items
+ */
+export const sort${pascalName}s = (
+  items: ${pascalName}[],
+  sortBy: 'name' | 'createdAt' = 'name',
+  order: 'asc' | 'desc' = 'asc'
+): ${pascalName}[] => {
+  return [...items].sort((a, b) => {
+    const aVal = a[sortBy]
+    const bVal = b[sortBy]
+    
+    if (order === 'asc') {
+      return aVal > bVal ? 1 : -1
+    } else {
+      return aVal < bVal ? 1 : -1
+    }
+  })
+}
+
+/**
+ * Filter ${name} items
+ */
+export const filter${pascalName}s = (
+  items: ${pascalName}[],
+  search: string
+): ${pascalName}[] => {
+  if (!search) return items
+  
+  const searchLower = search.toLowerCase()
+  return items.filter(item =>
+    item.name.toLowerCase().includes(searchLower)
+  )
+}
+`
+}
+
+const generateReadmeTemplate = (name: string) => {
+  const pascalName = pascalCase(name)
+  return `# ${pascalName} Feature
+
+## Structure
+
+\`\`\`
+${name}/
+├── components/           # UI Components
+│   ├── ${pascalName}Card.vue
+│   ├── ${pascalName}List.vue
+│   └── ${pascalName}Form.vue
+├── composables/         # Business Logic
+│   └── use${pascalName}s.ts
+├── schemas/            # Validation & Types
+│   ├── ${name}.schema.ts
+│   └── ${name}.dto.ts
+├── services/           # API Calls
+│   └── ${name}.service.ts
+├── stores/            # State Management
+│   └── use${pascalName}Store.ts
+├── types/            # Additional Types
+│   └── ${name}.types.ts
+└── utils/           # Helper Functions
+    └── ${name}.helpers.ts
+\`\`\`
+
+## Usage
+
+### In a Page Component
+
+\`\`\`vue
+<script setup lang="ts">
+import { use${pascalName}s } from '~/features/${name}/composables/use${pascalName}s'
+import ${pascalName}List from '~/features/${name}/components/${pascalName}List.vue'
+
+const { items, loading, fetchAll, remove } = use${pascalName}s()
+
+await fetchAll()
+
+const handleDelete = async (id: string) => {
+  if (confirm('Are you sure?')) {
+    await remove(id)
+  }
+}
+</script>
+
+<template>
+  <div>
+    <h1>${pascalName}s</h1>
+    <${pascalName}List 
+      :items="items" 
+      @delete="handleDelete"
+    />
   </div>
 </template>
+\`\`\`
+
+## API Endpoints
+
+- \`GET /api/${name}\` - Get all ${name}s
+- \`GET /api/${name}/:id\` - Get ${name} by ID
+- \`POST /api/${name}\` - Create new ${name}
+- \`PATCH /api/${name}/:id\` - Update ${name}
+- \`DELETE /api/${name}/:id\` - Delete ${name}
 `
-);
-
-// ---------- Auto register route (Nuxt 4 with app directory) ----------
-
-const pagesDir = join(process.cwd(), "app", "pages");
-if (!existsSync(pagesDir)) {
-  mkdirSync(pagesDir, { recursive: true });
 }
 
-const featurePageDir = join(pagesDir, featureName);
-if (!existsSync(featurePageDir)) {
-  mkdirSync(featurePageDir);
+// Create feature structure
+async function createFeature() {
+  console.log(`\n🚀 Creating feature: ${featureName}\n`)
+
+  try {
+    // Create directories
+    const dirs = [
+      featurePath,
+      join(featurePath, 'components'),
+      join(featurePath, 'composables'),
+      join(featurePath, 'schemas'),
+      join(featurePath, 'services'),
+      join(featurePath, 'stores'),
+      join(featurePath, 'types'),
+      join(featurePath, 'utils'),
+    ]
+
+    for (const dir of dirs) {
+      await mkdir(dir, { recursive: true })
+      console.log(`✅ Created: ${dir.replace(process.cwd(), '.')}`)
+    }
+
+    // Create files
+    const files = [
+      // Schemas
+      {
+        path: join(featurePath, 'schemas', `${featureName}.schema.ts`),
+        content: generateSchemaTemplate(featureName),
+      },
+      {
+        path: join(featurePath, 'schemas', `${featureName}.dto.ts`),
+        content: generateDtoTemplate(featureName),
+      },
+      // Service
+      {
+        path: join(featurePath, 'services', `${featureName}.service.ts`),
+        content: generateServiceTemplate(featureName),
+      },
+      // Store
+      {
+        path: join(featurePath, 'stores', `use${pascalCase(featureName)}Store.ts`),
+        content: generateStoreTemplate(featureName),
+      },
+      // Composable
+      {
+        path: join(featurePath, 'composables', `use${pascalCase(featureName)}s.ts`),
+        content: generateComposableTemplate(featureName),
+      },
+      // Components
+      {
+        path: join(featurePath, 'components', `${pascalCase(featureName)}Card.vue`),
+        content: generateCardComponentTemplate(featureName),
+      },
+      {
+        path: join(featurePath, 'components', `${pascalCase(featureName)}List.vue`),
+        content: generateListComponentTemplate(featureName),
+      },
+      {
+        path: join(featurePath, 'components', `${pascalCase(featureName)}Form.vue`),
+        content: generateFormComponentTemplate(featureName),
+      },
+      // Types
+      {
+        path: join(featurePath, 'types', `${featureName}.types.ts`),
+        content: generateTypesTemplate(featureName),
+      },
+      // Utils
+      {
+        path: join(featurePath, 'utils', `${featureName}.helpers.ts`),
+        content: generateUtilsTemplate(featureName),
+      },
+      // README
+      {
+        path: join(featurePath, 'README.md'),
+        content: generateReadmeTemplate(featureName),
+      },
+    ]
+
+    for (const file of files) {
+      await writeFile(file.path, file.content)
+      console.log(`✅ Created: ${file.path.replace(process.cwd(), '.')}`)
+    }
+
+    console.log(`\n✨ Feature "${featureName}" created successfully!\n`)
+    console.log('📝 Next steps:')
+    console.log(`   1. Update the schema in: features/${featureName}/schemas/${featureName}.schema.ts`)
+    console.log(`   2. Customize components in: features/${featureName}/components/`)
+    console.log(`   3. Create a page in: app/pages/${featureName}/index.vue`)
+    console.log(`   4. Create API routes in: server/api/${featureName}/`)
+    console.log('\n📚 Read the README: features/' + featureName + '/README.md\n')
+  } catch (error) {
+    console.error('❌ Error creating feature:', error)
+    process.exit(1)
+  }
 }
 
-writeFileSync(
-  join(featurePageDir, "index.vue"),
-  `<script setup lang="ts">
-import IndexPage from '../../../features/${featureName}/presentation/pages/index.vue'
-</script>
-
-<template>
-  <IndexPage />
-</template>
-`
-);
-
-writeFileSync(
-  join(featurePageDir, "create.vue"),
-  `<script setup lang="ts">
-import CreatePage from '../../../features/${featureName}/presentation/pages/create.vue'
-</script>
-
-<template>
-  <CreatePage />
-</template>
-`
-);
-
-writeFileSync(
-  join(featurePageDir, "[id].vue"),
-  `<script setup lang="ts">
-import DetailPage from '../../../features/${featureName}/presentation/pages/[id].vue'
-</script>
-
-<template>
-  <DetailPage />
-</template>
-`
-);
-
-console.log(`✅ Feature "${featureName}" created successfully! 🚀`);
-console.log(`📁 Structure created in:`);
-console.log(`   - features/${featureName}`);
-console.log(`   - app/pages/${featureName}`);
+// Run the script
+createFeature()
