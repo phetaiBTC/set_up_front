@@ -1,29 +1,15 @@
 <template>
-  <div class="flex flex-col gap-2">
-    <SelectButton
-      v-model="value"
-      :options="options"
-      @change="setLocale(value)"
-      optionLabel="label"
-      optionValue="value"
-    />
-    <h1 class="mt-4 text-xl font-bold">{{ $t("welcome") }}</h1>
+  <div class="w-full border flex">
+    <!-- Sidebar -->
+    <div class="h-screen border hidden md:block">
+      <LayoutSidebar></LayoutSidebar>
+    </div>
+
+    <!-- Content -->
+    <div class="w-full">
+      <LayoutHeader></LayoutHeader>
+    </div>
   </div>
 </template>
 
-<script setup lang="ts">
-const { locales, setLocale } = useI18n();
-
-const options = ref([
-  {
-    label: "En 🇺🇸",
-    value: "en",
-  },
-  {
-    label: "La 🇱🇦",
-    value: "la",
-  },
-]);
-
-const value = ref<"en" | "la">("en");
-</script>
+<script setup lang="ts"></script>
