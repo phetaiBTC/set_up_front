@@ -1,9 +1,7 @@
 <template>
-  <div class="flex flex-col h-full border w-full">
+  <div class="flex flex-col h-full border w-full dark:bg-surface-900">
     <div class="flex items-center justify-between px-6 pt-4 shrink-0">
-      <span class="inline-flex items-center gap-2">
-        K
-      </span>
+      <span class="inline-flex items-center gap-2"> K </span>
     </div>
     <div class="overflow-y-auto hide-scrollbar">
       <ul class="list-none p-4 m-0">

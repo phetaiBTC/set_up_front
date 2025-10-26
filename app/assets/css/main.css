@@ -1,13 +1,118 @@
 @import "tailwindcss";
 @import "tailwindcss-primeui";
-@import 'primeicons/primeicons.css';
-/* @custom-variant dark (&:where(.my-app-dark, .my-app-dark *));   */
+@import "primeicons/primeicons.css";
 
 .hide-scrollbar {
-  scrollbar-width: none;       /* Firefox */
-  -ms-overflow-style: none;    /* IE 10+ */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-  display: none;               /* Chrome, Safari, Edge */
+  display: none;
+}
+
+/* 🌸 Light Mode - Pink Sky Theme */
+:root {
+  /* Primary Colors - Vibrant Pink */
+  --p-primary-color: #f472b6;
+  --p-primary-hover-color: #ec4899;
+  --p-primary-active-color: #db2777;
+  --p-primary-color-text: #ffffff;
+
+  /* Surface Colors - Soft Pink Sky */
+  --p-surface-ground: #fdf2f8; /* Lightest pink sky background */
+  --p-surface-section: #ffffff; /* White cards for contrast */
+  --p-surface-card: #fef3f9; /* Subtle pink tint */
+  --p-surface-hover: #fce7f3; /* Gentle pink hover */
+  --p-surface-overlay: #ffffff;
+
+  /* Text Colors */
+  --p-text-color: #1e293b;
+  --p-text-muted-color: #64748b;
+  --p-text-hover-color: #0f172a;
+
+  /* Border & Divider */
+  --p-border-color: #fbcfe8;
+  --p-divider-color: #fce7f3;
+
+  /* Shadows */
+  --p-shadow-color: rgba(244, 114, 182, 0.15);
+
+  /* Surface Scale */
+  --p-surface-0: #ffffff;
+  --p-surface-50: #fdf2f8;
+  --p-surface-100: #fce7f3;
+  --p-surface-200: #fbcfe8;
+  --p-surface-300: #f9a8d4;
+  --p-surface-400: #f472b6;
+  --p-surface-500: #ec4899;
+  --p-surface-600: #db2777;
+  --p-surface-700: #be185d;
+  --p-surface-800: #9d174d;
+  --p-surface-900: #831843;
+  --p-surface-950: #500724;
+
+  /* Focus & States */
+  --p-focus-ring-color: #f9a8d4;
+  --p-focus-ring-offset: 2px;
+}
+
+/* 🌙 Dark Mode - Twilight Pink Sky */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Primary Colors - Softer Pink for Dark */
+    --p-primary-color: #f9a8d4;
+    --p-primary-hover-color: #f472b6;
+    --p-primary-active-color: #ec4899;
+    --p-primary-color-text: #1a1625;
+
+    /* Surface Colors - Deep Purple Night Sky with Pink Glow */
+    --p-surface-ground: #1a1625; /* Deep twilight base */
+    --p-surface-section: #231f36; /* Elevated surfaces */
+    --p-surface-card: #2b2440; /* Cards with purple depth */
+    --p-surface-hover: #332b4d; /* Interactive hover state */
+    --p-surface-overlay: #2b2440;
+
+    /* Text Colors */
+    --p-text-color: #f1f5f9;
+    --p-text-muted-color: #cbd5e1;
+    --p-text-hover-color: #ffffff;
+
+    /* Border & Divider */
+    --p-border-color: #3b3157;
+    --p-divider-color: #332b4d;
+
+    /* Shadows */
+    --p-shadow-color: rgba(249, 168, 212, 0.2);
+
+    /* Surface Scale */
+    --p-surface-0: #1a1625;
+    --p-surface-50: #1e1b2e;
+    --p-surface-100: #231f36;
+    --p-surface-200: #2b2440;
+    --p-surface-300: #332b4d;
+    --p-surface-400: #3b3157;
+    --p-surface-500: #463567;
+    --p-surface-600: #5e3a85;
+    --p-surface-700: #7c3aed;
+    --p-surface-800: #a855f7;
+    --p-surface-900: #c084fc;
+    --p-surface-950: #0f0d16;
+
+    /* Focus & States */
+    --p-focus-ring-color: #f472b6;
+    --p-focus-ring-offset: 2px;
+  }
+}
+
+/* Optional: Custom Background Gradient for Extra Pink Sky Effect */
+body {
+  background: var(--p-surface-ground);
+  color: var(--p-text-color);
+}
+
+/* Optional: Smooth pink glow effect for cards */
+.card-glow {
+  box-shadow: 0 4px 6px -1px var(--p-shadow-color),
+    0 2px 4px -2px var(--p-shadow-color);
 }
