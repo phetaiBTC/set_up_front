@@ -13,11 +13,7 @@
 
     <div class="flex items-center gap-5">
       <ui-set-locale />
-      <Button
-        icon="pi pi-cog"
-        variant="link"
-        @click="emit('update:visible', true)"
-      />
+      <Button icon="pi pi-cog" variant="link" @click="" />
     </div>
   </div>
 </template>
@@ -26,7 +22,7 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import dayjs from "dayjs";
 
-const props = defineProps<{ visible: boolean }>();
+defineProps<{ visible: boolean }>();
 const emit = defineEmits(["update:visible"]);
 
 const dateTime = ref(dayjs().format("DD-MM-YYYY HH:mm:ss"));
