@@ -1,15 +1,17 @@
 <template>
-  <div class="w-full border flex">
+  <div class="flex">
     <!-- Sidebar -->
-    <div class="h-screen border hidden md:block">
-      <LayoutSidebar></LayoutSidebar>
+    <div class="hidden md:block h-screen border sticky top-0">
+      <LayoutSidebar />
     </div>
 
     <!-- Content -->
-    <div class="w-full">
-      <LayoutHeader></LayoutHeader>
+    <div class="flex-1 flex flex-col h-screen overflow-auto">
+      <LayoutHeader />
+      <div class="flex-1 min-h-full border">
+        <p v-for="i in 50" :key="i">Content row {{ i }}</p>
+      </div>
+      <LayoutFooter />
     </div>
   </div>
 </template>
-
-<script setup lang="ts"></script>

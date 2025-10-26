@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full border flex items-center px-5 py-2 justify-between">
+  <div class="w-full border flex items-center px-5 py-2 justify-between sticky top-0 backdrop-blur-xl">
     <div class="flex items-center gap-5">
       <div class="block sm:hidden">
         <Button icon="pi pi-bars" @click="visible = true" />
