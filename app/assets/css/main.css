@@ -20,7 +20,7 @@
   --p-primary-color-text: #ffffff;
 
   /* Surface Colors - Soft Pink Sky */
-  --p-surface-ground: #fdf2f8; /* Lightest pink sky background */
+  --p-surface-ground: #fdf2f8;
   --p-surface-section: #ffffff; /* White cards for contrast */
   --p-surface-card: #fef3f9; /* Subtle pink tint */
   --p-surface-hover: #fce7f3; /* Gentle pink hover */

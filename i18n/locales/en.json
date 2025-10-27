@@ -1,5 +1,8 @@
 {
   "welcome": "Welcome",
   "branch": "Branch",
-  "date" : "Date"
+  "date" : "Date",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "user": "User"
 }
