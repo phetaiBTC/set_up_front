@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-full w-full dark:bg-surface-900">
+  <div class="flex flex-col h-full w-full ">
     <div class="flex items-center justify-center px-6 py-3 shrink-0">
       <span class="inline-flex items-center gap-2">
         <img src="https://i.pinimg.com/736x/36/71/3c/36713c5bfdd45b0dcd9c0867c0f6d5fd.jpg" height="50" width="50"
@@ -32,8 +32,8 @@
               <a v-if="!menu.submenu" v-ripple @click="handleMenuClick(menu.to)" :class="[
                 'flex items-center cursor-pointer p-4 rounded duration-150 transition-colors p-ripple',
                 isActive(menu.to)
-                  ? 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-0'
-                  : 'text-surface-700 hover:bg-surface-100 dark:text-surface-0 dark:hover:bg-surface-800'
+                  ? 'bg-linear-to-r from-surface-600 via-surface-500 to-surface-400 dark:from-surface-900 dark:via-surface-800 dark:to-surface-700 text-white rounded-r-none'
+                  : 'text-surface-700 dark:text-surface-900 hover:bg-surface-100 dark:hover:bg-surface-800'
               ]">
                 <i class="mr-2" :class="menu.icon"></i>
                 <span class="font-medium">{{ $t(menu.label) }}</span>
@@ -51,14 +51,14 @@
                   'flex items-center cursor-pointer p-4 rounded duration-150 transition-colors p-ripple',
                   hasActiveSubmenu(menu.submenu)
                     ? 'bg-primary-50 dark:bg-primary-400/10 text-primary-700 dark:text-primary-400 font-semibold'
-                    : 'text-surface-700 hover:bg-surface-100 dark:text-surface-0 dark:hover:bg-surface-800'
+                    : 'text-surface-700 hover:bg-surface-100 dark:text-surface-900 dark:hover:bg-surface-800'
                 ]">
                   <i class="pi pi-chart-line mr-2"></i>
                   <span class="font-medium">{{ $t(menu.label) }}</span>
                   <i class="pi pi-chevron-down ml-auto"></i>
                 </a>
-                <ul
-                  class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all duration-[400ms] ease-in-out">
+                <!-- duration-[400ms] -->
+                <ul class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all  ease-in-out">
                   <li v-for="submenu in menu.submenu">
                     <a v-ripple @click="handleMenuClick(submenu.to)" :class="[
                       'flex items-center cursor-pointer p-4 rounded duration-150 transition-colors p-ripple',

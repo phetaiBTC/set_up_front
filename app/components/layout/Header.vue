@@ -1,7 +1,5 @@
 <template>
-  <header
-    class="w-full flex items-center px-5 py-2 justify-between sticky top-0 backdrop-blur-xl"
-  >
+  <header class="w-full text-surface-700 dark:text-surface-900 flex items-center px-5 py-2 justify-between sticky top-0 backdrop-blur-xl bg-surface-400/10 dark:bg-surface-900/10">
     <div class="flex items-center gap-5">
       <!-- ปุ่มเปิดเมนูในมือถือ -->
       <div class="block md:hidden">

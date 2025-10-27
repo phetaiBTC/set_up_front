@@ -31,7 +31,7 @@ const camelCase = (str: string) => {
   return pascal.charAt(0).toLowerCase() + pascal.slice(1)
 }
 
-const featurePath = join(process.cwd(), 'features', featureName)
+const featurePath = join(process.cwd(), 'modules', featureName)
 
 // Check if feature already exists
 if (existsSync(featurePath)) {
@@ -537,8 +537,8 @@ ${name}/
 
 \`\`\`vue
 <script setup lang="ts">
-import { use${pascalName}s } from '~/features/${name}/composables/use${pascalName}s'
-import ${pascalName}List from '~/features/${name}/components/${pascalName}List.vue'
+import { use${pascalName}s } from '~/modules/${name}/composables/use${pascalName}s'
+import ${pascalName}List from '~/modules/${name}/components/${pascalName}List.vue'
 
 const { items, loading, fetchAll, remove } = use${pascalName}s()
 
@@ -657,11 +657,11 @@ async function createFeature() {
 
     console.log(`\n✨ Feature "${featureName}" created successfully!\n`)
     console.log('📝 Next steps:')
-    console.log(`   1. Update the schema in: features/${featureName}/schemas/${featureName}.schema.ts`)
-    console.log(`   2. Customize components in: features/${featureName}/components/`)
+    console.log(`   1. Update the schema in: modules/${featureName}/schemas/${featureName}.schema.ts`)
+    console.log(`   2. Customize components in: modules/${featureName}/components/`)
     console.log(`   3. Create a page in: app/pages/${featureName}/index.vue`)
     console.log(`   4. Create API routes in: server/api/${featureName}/`)
-    console.log('\n📚 Read the README: features/' + featureName + '/README.md\n')
+    console.log('\n📚 Read the README: modules/' + featureName + '/README.md\n')
   } catch (error) {
     console.error('❌ Error creating feature:', error)
     process.exit(1)

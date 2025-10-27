@@ -8,7 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "make:feature": "tsx scripts/make-feature.ts"
+    "make:module": "tsx scripts/make-feature.ts"
   },
   "dependencies": {
     "@nuxtjs/i18n": "10.1.1",
