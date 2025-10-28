@@ -6,5 +6,6 @@
   "confirm": "Confirm",
   "user": "User",
   "role": "Role",
-  "permission": "Permission"
+  "permission": "Permission",
+  "is_required": "is required"
 }

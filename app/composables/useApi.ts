@@ -14,7 +14,7 @@ export const useApi = () => {
   // Request interceptor (เพิ่ม token ถ้ามี)
   axiosInstance.interceptors.request.use(
     (config) => {
-      const token = useCookie("token").value;
+      const token = localStorage.getItem("token");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

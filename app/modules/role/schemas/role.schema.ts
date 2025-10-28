@@ -2,7 +2,7 @@ import { z } from "zod";
 import { PermissionSchema } from "~/modules/permission/schemas/permission.schema";
 export const RoleSchema = z.object({
   id: z.number(),
-  code: z.string(),
+  code: z.string().nonempty({ message: "is_required" }),
   permissions: z.array(PermissionSchema),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -25,7 +25,7 @@ export const CreateRoleSchema = RoleSchema.omit({
   createdAt: true,
   updatedAt: true,
 }).extend({
-  permission: z.array(z.number()), // เพิ่ม field ใหม่
+  permissions: z.array(z.number()), // เพิ่ม field ใหม่
 });
 
 export const UpdateRoleSchema = CreateRoleSchema.partial();
