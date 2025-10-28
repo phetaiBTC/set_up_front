@@ -2,7 +2,7 @@ import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 
 export const useApi = () => {
   const config = useRuntimeConfig();
-  const baseURL = "http://localhost:3001/api";
+  const baseURL = "http://localhost:4000";
 
   const axiosInstance: AxiosInstance = axios.create({
     baseURL,
@@ -24,16 +24,16 @@ export const useApi = () => {
   );
 
   // Response interceptor (จัดการ error)
-  axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response?.status === 401) {
-        // Redirect to login or refresh token
-        navigateTo("/login");
-      }
-      return Promise.reject(error);
-    }
-  );
+  // axiosInstance.interceptors.response.use(
+  //   (response) => response,
+  //   (error) => {
+  //     if (error.response?.status === 401) {
+  //       // Redirect to login or refresh token
+  //       navigateTo("/login");
+  //     }
+  //     return Promise.reject(error);
+  //   }
+  // );
 
   return {
     async get<T = any>(url: string, config?: AxiosRequestConfig) {

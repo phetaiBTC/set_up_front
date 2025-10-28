@@ -31,7 +31,7 @@ const camelCase = (str: string) => {
   return pascal.charAt(0).toLowerCase() + pascal.slice(1)
 }
 
-const featurePath = join(process.cwd(), 'modules', featureName)
+const featurePath = join(process.cwd(),'modules', featureName)
 
 // Check if feature already exists
 if (existsSync(featurePath)) {

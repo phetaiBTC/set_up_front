@@ -1,0 +1,88 @@
+import { defineStore } from "pinia";
+import type { Permission } from "../schemas/permission.dto";
+import type { PaginatedResponse } from "~/shared/interface/pagination.interface";
+import { defaultDataPagination } from "~/shared/BaseModule/stores/useBaseStore";
+
+export const usePermissionStore = defineStore("permission", () => {
+  // State
+  const permissionList = ref<PaginatedResponse<Permission>>({
+    data: [],
+    pagination: {
+      total: 0,
+      count: 0,
+      limit: 0,
+      totalPages: 0,
+      currentPage: 1,
+    },
+  });
+  const permission = ref<Permission | null>(null);
+  const loading = ref(false);
+  const error = ref<string | null>(null);
+
+  const setItems = (items: PaginatedResponse<Permission>) => {
+    permissionList.value = items;
+  }
+  // Getters
+  const getById = computed(() => {
+    return (id: number) =>
+      permissionList.value.data.find((item) => item.id === id);
+  });
+
+  function addItem(item: Permission) {
+    permissionList.value.data.push(item);
+  }
+
+  function updateItem(id: number, data: Partial<Permission>) {
+    const index = permissionList.value.data.findIndex((item) => item.id === id);
+    if (index !== -1 && permissionList.value.data[index]) {
+      permissionList.value.data[index] = {
+        ...permissionList.value.data[index],
+        ...data,
+      };
+    }
+  }
+
+  function removeItem(id: number) {
+    permissionList.value.data = permissionList.value.data.filter(
+      (item) => item.id !== id
+    );
+  }
+
+  function setCurrentItem(item: Permission | null) {
+    permission.value = item;
+  }
+
+  function setLoading(value: boolean) {
+    loading.value = value;
+  }
+
+  function setError(message: string | null) {
+    error.value = message;
+  }
+
+  function reset() {
+    permissionList.value = defaultDataPagination;
+    permission.value = null;
+    loading.value = false;
+    error.value = null;
+  }
+
+  return {
+    // State
+    permissionList,
+    permission,
+    loading,
+    error,
+    // Getters
+    getById,
+    setItems,
+    // Actions
+    addItem,
+    updateItem,
+    removeItem,
+    setCurrentItem,
+    setLoading,
+    setError,
+    reset,
+  };
+});
