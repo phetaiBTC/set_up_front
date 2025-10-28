@@ -4,5 +4,7 @@
   "date" : "Date",
   "cancel": "Cancel",
   "confirm": "Confirm",
-  "user": "User"
+  "user": "User",
+  "role": "Role",
+  "permission": "Permission"
 }

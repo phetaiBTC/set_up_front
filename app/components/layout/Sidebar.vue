@@ -29,7 +29,7 @@
             <li v-for="menu in menu_items.menu">
 
               <!-- menu -->
-              <a v-if="!menu.submenu" v-ripple @click="handleMenuClick(menu.to)" :class="[
+              <a v-if="!menu.submenu" v-ripple @click="handleMenuClick(menu.to, menu.query)" :class="[
                 'flex items-center cursor-pointer p-4 rounded duration-150 transition-colors p-ripple',
                 isActive(menu.to)
                   ? 'bg-linear-to-r from-surface-600 via-surface-500 to-surface-400 dark:from-surface-900 dark:via-surface-800 dark:to-surface-700 text-white rounded-r-none'
@@ -60,7 +60,7 @@
                 <!-- duration-[400ms] -->
                 <ul class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all  ease-in-out">
                   <li v-for="submenu in menu.submenu">
-                    <a v-ripple @click="handleMenuClick(submenu.to)" :class="[
+                    <a v-ripple @click="handleMenuClick(submenu.to, submenu.query)" :class="[
                       'flex items-center cursor-pointer p-4 rounded duration-150 transition-colors p-ripple',
                       isActive(submenu.to)
                         ? 'bg-primary-50 dark:bg-primary-400/10 text-primary-700 dark:text-primary-400 font-semibold'
@@ -139,7 +139,8 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter, useRoute, type LocationQueryRaw } from 'vue-router';
+import { defaultQuery } from '~/shared/valueObject';
 
 const router = useRouter();
 const route = useRoute();
@@ -153,11 +154,14 @@ const menuItems = ref<
       label: string;
       icon: string;
       to?: string;
+      query?: LocationQueryRaw;
       submenu?: {
         label: string;
         icon: string;
         to?: string;
         permission: string;
+        query?: LocationQueryRaw;
+
       }[];
     }[];
     permission: string;
@@ -234,6 +238,7 @@ const menuItems = ref<
         label: "role",
         icon: "pi pi-user-edit",
         to: "/role",
+        query: defaultQuery,
         permission: "",
       },
     ],
@@ -254,9 +259,9 @@ const hasActiveSubmenu = (submenu?: { to?: string }[]) => {
 };
 
 // จัดการการคลิกเมนู
-const handleMenuClick = (path?: string) => {
+const handleMenuClick = (path?: string, query?: LocationQueryRaw) => {
   if (path) {
-    router.push(path);
+    router.push({ path, query });
   }
 };
 </script>

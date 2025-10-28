@@ -1,6 +1,3 @@
-// Additional types for permission feature
-// Add custom types here if needed
-
 export interface PermissionFilters {
   search?: string
   sortBy?: 'name' | 'createdAt'

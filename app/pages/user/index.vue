@@ -5,9 +5,9 @@
 </template>
 
 <script setup lang="ts">
-import { usePermissions } from '~/modules/permission/composables/usePermissions';
+import { usePermissions } from '~/modules/permission/composables/usePermission';
 
-const { fetchAll, permissionList,loading } = usePermissions();
+const { fetchAll, permissionList, loading } = usePermissions();
 
 onMounted(async () => {
   await fetchAll();
