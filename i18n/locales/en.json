@@ -1,11 +1,16 @@
 {
   "welcome": "Welcome",
   "branch": "Branch",
-  "date" : "Date",
+  "date": "Date",
   "cancel": "Cancel",
   "confirm": "Confirm",
   "user": "User",
   "role": "Role",
   "permission": "Permission",
-  "is_required": "is required"
+  "is_required": "is required",
+  "form": "Form",
+  "add": "Add",
+  "edit": "Edit",
+  "delete": "Delete",
+  "view": "View"
 }
