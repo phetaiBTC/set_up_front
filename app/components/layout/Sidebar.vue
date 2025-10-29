@@ -139,10 +139,9 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter, useRoute, type LocationQueryRaw } from 'vue-router';
+import { useRoute, type LocationQueryRaw } from 'vue-router';
 import { defaultQuery } from '~/shared/valueObject';
 
-const router = useRouter();
 const route = useRoute();
 
 const menuItems = ref<
@@ -261,7 +260,7 @@ const hasActiveSubmenu = (submenu?: { to?: string }[]) => {
 // จัดการการคลิกเมนู
 const handleMenuClick = (path?: string, query?: LocationQueryRaw) => {
   if (path) {
-    router.push({ path, query });
+    navigateTo({ path, query });
   }
 };
 </script>

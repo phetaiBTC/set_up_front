@@ -22,7 +22,7 @@
                         @keyup.enter="setQuery({ search })" />
                 </IconField>
                 <Button class=" sm:ml-auto" :label="$t('add') + ' ' + $t('role')" icon="pi pi-plus"
-                    @click="visible = true" />
+                    @click="navigateTo('/role/form')" />
             </div>
         </div>
         <role-table :data="roleList" :loading="loading" />

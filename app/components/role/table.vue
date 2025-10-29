@@ -20,7 +20,7 @@
             <template #body="slotProps">
                 <div class="flex flex-row gap-2">
                     <Button icon="pi pi-pencil" class="p-button-rounded mr-2"
-                        @click="$router.push(`/role/${slotProps.data.id}`)"></Button>
+                        @click="navigateTo(`/role/${slotProps.data.id}`)"></Button>
                     <Button icon="pi pi-trash" class="p-button-rounded p-button-danger" variant="outlined"
                         @click="$emit('delete', slotProps.data.id)"></Button>
                 </div>
