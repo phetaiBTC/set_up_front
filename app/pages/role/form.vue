@@ -2,7 +2,7 @@
     <UiDev>
         <!-- Form Header -->
         <div class="flex flex-row justify-between items-center mb-5">
-            <h2 class="text-2xl font-bold">{{ $t('form') + ' ' +$t('role') }}</h2>
+            <h2 class="text-2xl font-bold">{{ $t('form') + ' ' + $t('role') }}</h2>
             <Button label="back" variant="text" @click="navigateTo('/role')"
                 class="text-gray-600 hover:text-gray-800" />
         </div>
@@ -77,7 +77,7 @@ const groupedPermissions = computed(() => {
         if (!groups[prefix]) groups[prefix] = []
         groups[prefix].push({
             ...p,
-            label: p.code
+            label: p.code?.split('-')[1]
         })
     })
     return Object.entries(groups).map(([group, permissions]) => ({
