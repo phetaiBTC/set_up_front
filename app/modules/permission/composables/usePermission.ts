@@ -1,3 +1,4 @@
+import { GetType } from "~/shared/dto/pagination.dto";
 import { permissionService } from "../services/permission.service";
 import { usePermissionStore } from "../stores/usePermissionStore";
 export const usePermissions = () => {
@@ -29,6 +30,6 @@ export const usePermissions = () => {
     // Getters
     getById: store.getById,
     // Actions
-    fetchAll
+    fetchAll,
   };
 };

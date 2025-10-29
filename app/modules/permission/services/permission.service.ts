@@ -13,9 +13,12 @@ export class PermissionService {
   async getAll(params?: PaginationDto): Promise<PaginatedResponse<Permission>> {
     const { data } = await useApi().get<PaginatedResponse<Permission>>(
       this.baseUrl,
-      { params }
+      {
+        params: {
+          type: "all",
+        },
+      }
     );
-    console.log(data);
     return PermissionListSchema.parse(data);
   }
 

@@ -113,6 +113,7 @@ function toggleAll() {
 
 onMounted(async () => {
     await fetchAll()
+    console.log(permissionList.value)
 })
 </script>
 
