@@ -8,7 +8,7 @@
         </div>
 
         <!-- Form -->
-        <Form :resolver="resolver" :initialValues="formState" @submit="" class="flex flex-col gap-6">
+        <Form :resolver="resolver" :initialValues="formState" @submit="" class="flex flex-col gap-2">
             <!-- Code Field -->
             <div class="flex flex-row justify-between gap-3">
                 <FormField v-slot="$field" name="code" class="flex flex-col gap-1 flex-1">
@@ -32,7 +32,7 @@
 
 
             <!-- Grouped Permissions -->
-            <div v-for="group in groupedPermissions" :key="group.group" class="mb-2 rounded p-2 ">
+            <div v-for="group in groupedPermissions" :key="group.group" class=" rounded p-2 ">
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="font-semibold text-lg"><i class="pi pi-play-circle mr-2"></i> {{ group.group }}</h3>
                     <Button size="small" variant="outlined" icon="pi pi-check-square"
