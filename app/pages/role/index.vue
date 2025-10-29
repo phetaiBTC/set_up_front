@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <UiDev>
         <role-dialog v-model:visible="visible" />
         <div class="flex justify-between sm:flex-row flex-col gap-2">
             <div class="flex flex-row gap-2 flex-1 justify-between items-center">
@@ -30,7 +30,7 @@
         <Paginator :first="(query.page! - 1) * query.limit!" :rows="query.limit"
             :totalRecords="roleList.pagination.total" :rowsPerPageOptions="[5, 10, 20, 30]"
             @page="setQuery({ page: $event.page + 1, limit: $event.rows })" />
-    </div>
+    </UiDev>
 </template>
 
 <script setup lang="ts">

@@ -1,7 +1,11 @@
+<template>
+  <UiDev></UiDev>
+</template>
+
 <script setup lang="ts">
-import CreatePage from '../../../features/products/presentation/pages/create.vue'
+
 </script>
 
-<template>
-  <CreatePage />
-</template>
+<style scoped>
+
+</style>

@@ -1,7 +1,5 @@
 <template>
-    <div>
-        hello world
-    </div>
+    <UiDev></UiDev>
 </template>
 
 <script setup lang="ts">

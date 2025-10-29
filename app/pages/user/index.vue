@@ -1,7 +1,9 @@
 <template>
-  <div>
+  <UiDev>
     <permission-table :data="permissionList" :loading="loading" />
-  </div>
+  </UiDev>
+
+
 </template>
 
 <script setup lang="ts">
