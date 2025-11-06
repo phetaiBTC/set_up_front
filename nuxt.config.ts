@@ -7,8 +7,8 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  css: ["~/assets/css/main.css","~/assets/layout/layout.scss"],
-  modules: ["@primevue/nuxt-module"],
+  css: ["~/assets/css/main.css", "~/assets/layout/layout.scss"],
+  modules: ["@primevue/nuxt-module", "@nuxtjs/i18n"],
   primevue: {
     options: {
       theme: {
@@ -18,5 +18,12 @@ export default defineNuxtConfig({
         },
       },
     },
+  },
+  i18n: {
+    defaultLocale: "la",
+    locales: [
+      { code: "en", name: "English", file: "en.json" },
+      { code: "la", name: "Laos", file: "la.json" },
+    ],
   },
 });

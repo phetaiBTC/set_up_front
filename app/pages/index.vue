@@ -1,13 +1,16 @@
 <template>
-    <div>
-        hello world
+  <div class="grid grid-cols-12 gap-8">
+    <!-- <stats></stats> -->
+
+    <div class="col-span-12 xl:col-span-6">
+
     </div>
+    <div class="col-span-12 xl:col-span-6">
+
+    </div>
+  </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts"></script>
 
-</script>
-
-<style scoped>
-
-</style>
+<style scoped></style>
