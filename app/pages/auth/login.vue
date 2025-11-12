@@ -4,7 +4,7 @@
       :resolver="resolver"
       class="flex flex-col gap-3 justify-center items-center"
       :initialValues="formState"
-      @submit=""
+      @submit="login(formState)"
     >
       <h1>{{ $t("signin") }}</h1>
       <ui-input name="email" label="email" v-model="formState.email"></ui-input>
@@ -26,8 +26,7 @@ definePageMeta({
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import type { LoginDto } from "~/dto/auth.dto";
 import { LoginSchema } from "~/schemas/auth.schema";
-
-const loginStore = useAuthStore();
+const { login } = useAuth();
 const formState = reactive<LoginDto>({
   email: "",
   password: "",

@@ -1,5 +1,5 @@
 <template>
-  <app-layout></app-layout>
+  <LayoutsApp></LayoutsApp>
 </template>
 
 <script setup lang="ts"></script>

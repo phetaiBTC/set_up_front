@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.API_BASE_URL || "http://localhost:3000/api",
     },
-    apiKey: process.env.API_KEY || "",
+    // apiKey: process.env.API_KEY || "",
   },
   css: ["~/assets/css/main.css", "~/assets/layout/layout.scss"],
   modules: ["@primevue/nuxt-module", "@nuxtjs/i18n", "@pinia/nuxt"],

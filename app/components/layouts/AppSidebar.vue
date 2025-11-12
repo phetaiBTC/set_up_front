@@ -2,7 +2,7 @@
 
 <template>
   <div class="layout-sidebar hide-scrollbar">
-    <app-menu></app-menu>
+    <layouts-app-menu></layouts-app-menu>
   </div>
 </template>
 

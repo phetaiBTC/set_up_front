@@ -68,8 +68,8 @@ function isOutsideClicked(event: MouseEvent): boolean {
 
 <template>
   <div class="layout-wrapper" :class="containerClass">
-    <app-topbar />
-    <app-sidebar />
+    <layouts-app-topbar />
+    <layouts-app-sidebar />
 
     <div class="layout-main-container">
       <div class="layout-main">

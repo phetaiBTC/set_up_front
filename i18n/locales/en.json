@@ -24,5 +24,6 @@
   "table": "Table",
   "name": "Name",
   "actions": "Actions",
-  "deleteAt": "Deleted at"
+  "deleteAt": "Deleted at",
+  "roles": "Roles"
 }

@@ -46,7 +46,7 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                     >
                         <i class="pi pi-palette"></i>
                     </button>
-                    <AppConfigurator />
+                    <LayoutsAppConfigurator />
                 </div>
             </div>
 
