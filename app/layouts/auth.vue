@@ -1,4 +1,7 @@
 <template>
+  <Toast />
+  <ConfirmDialog></ConfirmDialog>
+
   <div class="layout-topbar">
     <div class="layout-topbar-actions">
       <div class="layout-config-menu">

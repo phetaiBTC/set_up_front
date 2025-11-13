@@ -17,6 +17,17 @@ export const useApi = () => {
     }
     return request;
   });
+  axiosInstance.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      if (error.response.status === 401) {
+        navigateTo({ name: "Login" });
+      }
+      return Promise.reject(error);
+    }
+  );
   return {
     async get<T = any>(url: string, config?: AxiosRequestConfig) {
       return await axiosInstance.get<T>(url, config);

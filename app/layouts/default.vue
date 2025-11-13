@@ -1,5 +1,7 @@
 <template>
-  <LayoutsApp></LayoutsApp>
+  <Toast />
+  <ConfirmDialog></ConfirmDialog>
+  <layouts-app></layouts-app>
 </template>
 
 <script setup lang="ts"></script>
