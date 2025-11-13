@@ -1,8 +1,9 @@
-import type { LoginDto } from "~/dto/auth.dto";
+import type { ILoginDto } from "~/types/dto/auth.dto";
+
 export const useAuth = () => {
   const store = useAuthStore();
   const toast = useToast();
-  const login = async (loginDto: LoginDto) => {
+  const login = async (loginDto: ILoginDto) => {
     try {
       store.setLoading(true);
       const res = await useApi().post("/auth/login", loginDto);

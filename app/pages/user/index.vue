@@ -1,101 +1,86 @@
 <template>
-  <div class="grid grid-cols-12 gap-8">
-    <UiStats title="users" :count="24" type="people">
-      <div
-        class="flex items-center justify-center rounded-border bg-blue-100 dark:bg-blue-400/10 text-blue-500"
-        style="width: 2.5rem; height: 2.5rem"
+  <div>
+    <div v-if="pending || store.loading">Loading...</div>
+    <div v-else-if="error">Error: {{ error.message }}</div>
+    <div v-else class="grid grid-cols-12 gap-8">
+      <!-- UiStats -->
+      <UiStats
+        title="users"
+        :count="store.userList.pagination.count"
+        :type="$t('people')"
       >
-        <i class="pi pi-users text-xl"></i>
-      </div>
-    </UiStats>
-
-    <div class="col-span-12">
-      <div class="card">
-        <Toolbar class="mb-6">
-          <template #start>
-            <Button
-              label="New"
-              icon="pi pi-plus"
-              severity="secondary"
-              class="mr-2"
-              @click=""
-            />
-            <Button
-              label="Delete"
-              icon="pi pi-trash"
-              severity="secondary"
-              @click=""
-            />
-          </template>
-
-          <template #end>
-            <Button
-              label="Export"
-              icon="pi pi-upload"
-              severity="secondary"
-              @click=""
-            />
-          </template>
-        </Toolbar>
-
-        <DataTable
-          ref="dt"
-          v-model:selection="selectedProducts"
-          :value="products"
-          dataKey="id"
-          :paginator="true"
-          :rows="10"
-          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-          :rowsPerPageOptions="[5, 10, 25]"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+        <div
+          class="flex items-center justify-center rounded-border bg-blue-100 dark:bg-blue-400/10 text-blue-500"
+          style="width: 2.5rem; height: 2.5rem"
         >
-          <template #header>
-            <div class="flex flex-wrap gap-2 items-center justify-between">
-              <h4 class="m-0">Manage Products</h4>
-              <IconField>
-                <InputIcon>
-                  <i class="pi pi-search" />
-                </InputIcon>
-                <InputText placeholder="Search..." />
-              </IconField>
-            </div>
-          </template>
+          <i class="pi pi-users text-xl"></i>
+        </div>
+      </UiStats>
 
-          <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-          <Column field="name" header="Name" :sortable="true"></Column>
-          <Column field="price" header="Price" :sortable="true">
-            <template #body="{ data }">
-              {{ formatCurrency(data.price) }}
+      <!-- User Table -->
+      <div class="col-span-12">
+        <div class="card">
+          <Toolbar class="mb-6">
+            <template #start>
+              <Button
+                label="New"
+                icon="pi pi-plus"
+                severity="secondary"
+                class="mr-2"
+              />
+              <Button label="Delete" icon="pi pi-trash" severity="secondary" />
             </template>
-          </Column>
-          <Column field="category" header="Category" :sortable="true"></Column>
-        </DataTable>
+            <template #end>
+              <Button label="Export" icon="pi pi-upload" severity="secondary" />
+            </template>
+          </Toolbar>
+
+          <UserTable
+            title="user"
+            :loading="store.loading"
+            :data="store.userList"
+            :sort="query.sort"
+            :checked="query.is_active"
+            v-model:value="selectedUsers"
+            :query="query"
+          />
+        </div>
       </div>
     </div>
-    <div class="col-span-12 xl:col-span-6"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-const selectedProducts = ref<[]>([]);
-const products = ref([
-  {
-    id: 1,
-    name: "Bamboo Watch",
-    price: 65000,
-    category: "Accessories",
-    inventoryStatus: "INSTOCK",
-    rating: 5,
-  },
-  {
-    id: 2,
-    name: "Bamboo Watch",
-    price: 65000,
-    category: "Accessories",
-    inventoryStatus: "INSTOCK",
-    rating: 5,
-  },
-]);
-</script>
+import { ref } from "vue";
+import { useUserStore } from "~/stores/user.store";
+import { sortType, Status } from "~/types/enum/paginate.enum";
 
-<style scoped></style>
+const route = useRoute();
+const router = useRouter();
+const query = reactive({
+  page: route.query.page ? Number(route.query.page) : 1,
+  limit: route.query.limit ? Number(route.query.limit) : 10,
+  search: route.query.search ? String(route.query.search) : "",
+  sort: route.query.sort
+    ? (String(route.query.sort) as sortType)
+    : sortType.ASC,
+  is_active: route.query.is_active
+    ? (String(route.query.is_active) as Status)
+    : Status.ACTIVE,
+});
+if (!route.query.page) {
+  router.replace({
+    query: {
+      page: query.page.toString(),
+      limit: query.limit.toString(),
+      search: query.search,
+      sort: query.sort,
+      is_active: query.is_active,
+    },
+  });
+}
+const store = useUserStore();
+const { findAll } = useUser();
+const selectedUsers = ref([]);
+const { pending, error } = await useAsyncData("users", () => findAll());
+</script>

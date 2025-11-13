@@ -6,6 +6,7 @@
   "login": "Login",
   "logout": "Logout",
   "user": "User",
+  "username": "Username",
   "register": "Register",
   "signup": "Sign up",
   "signin": "Sign in",
@@ -25,5 +26,15 @@
   "name": "Name",
   "actions": "Actions",
   "deleteAt": "Deleted at",
-  "roles": "Roles"
+  "roles": "Roles",
+  "verified": "Verified",
+  "unverified": "Unverified",
+  "is_verified": "Is verified",
+  "people": "People",
+  "manage": "Manage",
+  "search": "Search",
+  "deletedAt": "Deleted at",
+  "inactive": "Inactive",
+  "active": "Active",
+  "status":"Status"
 }

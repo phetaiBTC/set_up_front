@@ -1,11 +1,14 @@
 <template>
   <FormField v-slot="$field" :name="name" class="flex flex-col gap-1 flex-1">
     <FloatLabel variant="on">
-      <InputText
-        v-bind="$field"
-        v-model="innerValue"
-        class="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary transition"
-      />
+      <IconField>
+        <InputIcon :class="icon" v-if="icon" />
+        <InputText
+          v-bind="$field"
+          v-model="innerValue"
+          class="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary transition"
+        />
+      </IconField>
       <label>{{ $t(label) }}</label>
     </FloatLabel>
     <Message v-if="$field.invalid" severity="error" size="small" class="mt-1">
@@ -21,6 +24,7 @@ const props = defineProps<{
   modelValue: string;
   name: string;
   label: string;
+  icon?: string;
 }>();
 
 const emit = defineEmits<{

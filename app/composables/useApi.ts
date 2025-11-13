@@ -11,7 +11,7 @@ export const useApi = () => {
     withCredentials: true,
   });
   axiosInstance.interceptors.request.use((request) => {
-    const token = useCookie("token").value;
+    const token = useCookie("access_token").value;
     if (token) {
       request.headers.Authorization = `Bearer ${token}`;
     }

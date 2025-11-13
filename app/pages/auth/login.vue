@@ -24,14 +24,14 @@ definePageMeta({
   name: "Login",
 });
 import { zodResolver } from "@primevue/forms/resolvers/zod";
-import type { LoginDto } from "~/dto/auth.dto";
-import { LoginSchema } from "~/schemas/auth.schema";
+import { type ILoginDto, LoginDto } from "~/types/dto/auth.dto";
+
 const auth = useAuth();
-const formState = reactive<LoginDto>({
+const formState = reactive<ILoginDto>({
   email: "admin@gmail.com",
   password: "11111111",
 });
-const resolver = zodResolver(LoginSchema);
+const resolver = zodResolver(LoginDto);
 </script>
 
 <style scoped></style>
