@@ -10,7 +10,6 @@ export const useAuth = () => {
         "/auth/login",
         loginDto
       );
-      console.log(res);
       if (res.access_token) {
         const accessToken = useCookie("access_token");
         accessToken.value = res.access_token;
