@@ -13,7 +13,12 @@
         label="password"
         v-model="formState.password"
       ></ui-input>
-      <Button :label="$t('signin')" type="submit" class="w-full" :loading="loading" />
+      <Button
+        :label="$t('signin')"
+        type="submit"
+        class="w-full"
+        :loading="loading"
+      />
     </Form>
   </div>
 </template>
@@ -26,7 +31,7 @@ definePageMeta({
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { type ILoginDto, LoginDto } from "~/types/dto/auth.dto";
 const { login } = useAuth();
-const { loading } = useAuthStore();
+const { loading } = storeToRefs(useAuthStore());
 const formState = reactive<ILoginDto>({
   email: "admin@gmail.com",
   password: "11111111",
