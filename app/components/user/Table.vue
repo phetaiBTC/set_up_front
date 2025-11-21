@@ -45,13 +45,19 @@
               })
             "
           />
+
           <IconField>
             <InputIcon>
               <i class="pi pi-search" />
             </InputIcon>
-
-            <InputText :placeholder="$t('search') + '...'" />
+            <InputText
+              v-model="search"
+              :placeholder="$t('search') + '...'"
+              @keydown.enter="emit('onSearch', search)"
+            />
           </IconField>
+
+          <Button icon="pi pi-search" @click="emit('onSearch', search)" />
         </div>
       </div>
     </template>
@@ -142,7 +148,7 @@ import type { IUserEntity } from "~/types/entities/user.entity";
 import { type PaginatedResponse } from "../../shared/entities/paginate.entity";
 import { sortType, Status } from "~/types/enum/paginate.enum";
 import type { IPaginateDto } from "~/types/dto/paginate.dto";
-
+const search = ref("");
 const props = defineProps<{
   data: PaginatedResponse<IUserEntity>;
   value: IUserEntity[];
@@ -160,6 +166,7 @@ const emit = defineEmits([
   "onChangeSort",
   "onChangeChecked",
   "onChangePage",
+  "onSearch",
 ]);
 const selection = ref<IUserEntity[]>(props.value);
 

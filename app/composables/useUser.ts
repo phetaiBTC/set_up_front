@@ -1,5 +1,7 @@
 import { useUserStore } from "~/stores/user.store";
 import { useToast } from "primevue/usetoast";
+import type { PaginatedResponse } from "~/shared/entities/paginate.entity";
+import type { IUserEntity } from "~/types/entities/user.entity";
 
 export const useUser = () => {
   const store = useUserStore();
@@ -8,10 +10,9 @@ export const useUser = () => {
   const findAll = async () => {
     try {
       store.setLoading(true);
-      const response = await useApi().get("/user");
-      if (!response.data) return;
-      store.setUserList(response.data);
-      return response.data;
+      const res = await useApi().get<PaginatedResponse<IUserEntity>>("/user");
+      store.setUserList(res);
+      return res;
     } catch (err: any) {
       toast.add({
         severity: "error",

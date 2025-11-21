@@ -1,21 +1,13 @@
 <template>
   <div>
-    <div v-if="pending || store.loading">Loading...</div>
-    <div v-else-if="error">Error: {{ error.message }}</div>
-    <div v-else class="grid grid-cols-12 gap-8">
+    <div class="grid grid-cols-12 gap-8">
       <!-- UiStats -->
       <UiStats
         title="users"
         :count="store.userList.pagination.count"
         :type="$t('people')"
-      >
-        <div
-          class="flex items-center justify-center rounded-border bg-blue-100 dark:bg-blue-400/10 text-blue-500"
-          style="width: 2.5rem; height: 2.5rem"
-        >
-          <i class="pi pi-users text-xl"></i>
-        </div>
-      </UiStats>
+        icon="pi pi-users text-xl"
+      />
 
       <!-- User Table -->
       <div class="col-span-12">
@@ -43,6 +35,7 @@
             :checked="query.is_active"
             v-model:value="selectedUsers"
             :query="query"
+            @on-search="onSearch"
           />
         </div>
       </div>
@@ -54,7 +47,9 @@
 import { ref } from "vue";
 import { useUserStore } from "~/stores/user.store";
 import { sortType, Status } from "~/types/enum/paginate.enum";
-
+const onSearch = (e:Event) => {
+  console.log(e)
+};
 const route = useRoute();
 const router = useRouter();
 const query = reactive({
@@ -82,5 +77,5 @@ if (!route.query.page) {
 const store = useUserStore();
 const { findAll } = useUser();
 const selectedUsers = ref([]);
-const { pending, error } = await useAsyncData("users", () => findAll());
+await findAll();
 </script>

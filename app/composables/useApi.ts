@@ -1,49 +1,28 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
-
 export const useApi = () => {
   const config = useRuntimeConfig();
-  const baseURL = config.public.apiBase || "localhost:4000";
-  const axiosInstance: AxiosInstance = axios.create({
-    baseURL,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    withCredentials: true,
-  });
-  axiosInstance.interceptors.request.use((request) => {
-    const token = useCookie("access_token").value;
-    if (token) {
-      request.headers.Authorization = `Bearer ${token}`;
-    }
-    return request;
-  });
-  axiosInstance.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    (error) => {
-      if (error.response.status === 401) {
-        navigateTo({ name: "Login" });
-      }
-      return Promise.reject(error);
-    }
-  );
+  const token = useCookie("access_token");
+
+  const baseURL = config.public.apiBase;
+
+  const request = async <T>(method: string, url: string, options: any = {}) => {
+    return await $fetch<T>(url, {
+      baseURL,
+      method,
+      headers: {
+        Authorization: token.value ? `Bearer ${token.value}` : "",
+        ...options.headers,
+      },
+      ...options,
+    });
+  };
+
   return {
-    async get<T = any>(url: string, config?: AxiosRequestConfig) {
-      return await axiosInstance.get<T>(url, config);
-    },
-    async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig) {
-      return await axiosInstance.post<T>(url, data, config);
-    },
-    async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig) {
-      return await axiosInstance.put<T>(url, data, config);
-    },
-    async patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig) {
-      return await axiosInstance.patch<T>(url, data, config);
-    },
-    async delete<T = any>(url: string, config?: AxiosRequestConfig) {
-      return await axiosInstance.delete<T>(url, config);
-    },
-    instance: axiosInstance,
+    get: <T>(url: string, options?: any) => request<T>("GET", url, options),
+    post: <T>(url: string, body?: any, options?: any) =>
+      request<T>("POST", url, { body, ...options }),
+    put: <T>(url: string, body?: any, options?: any) =>
+      request<T>("PUT", url, { body, ...options }),
+    delete: <T>(url: string, options?: any) =>
+      request<T>("DELETE", url, options),
   };
 };

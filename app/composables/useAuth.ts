@@ -6,10 +6,14 @@ export const useAuth = () => {
   const login = async (loginDto: ILoginDto) => {
     try {
       store.setLoading(true);
-      const res = await useApi().post("/auth/login", loginDto);
-      if (res.data.access_token) {
+      const res = await useApi().post<{ access_token: string }>(
+        "/auth/login",
+        loginDto
+      );
+      console.log(res);
+      if (res.access_token) {
         const accessToken = useCookie("access_token");
-        accessToken.value = res.data.access_token;
+        accessToken.value = res.access_token;
       }
       toast.add({
         severity: "success",
