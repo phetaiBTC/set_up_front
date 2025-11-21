@@ -33,7 +33,7 @@
         </div>
       </div>
 
-      <button
+      <!-- <button
         class="layout-topbar-menu-button layout-topbar-action"
         v-styleclass="{
           selector: '@next',
@@ -45,7 +45,7 @@
         }"
       >
         <i class="pi pi-ellipsis-v"></i>
-      </button>
+      </button> -->
     </div>
   </div>
 
