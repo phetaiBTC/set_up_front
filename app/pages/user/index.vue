@@ -35,7 +35,10 @@
             :checked="query.is_active"
             v-model:value="selectedUsers"
             :query="query"
-            @on-search="onSearch"
+            @on-search="onQuery.search($event)"
+            @on-change-sort="onQuery.sort($event.sort)"
+            @on-change-active="onQuery.checked($event.is_active)"
+            @on-change-page="onQuery.page($event.page, $event.limit)"
           />
         </div>
       </div>
@@ -44,38 +47,90 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch, reactive } from "vue";
 import { useUserStore } from "~/stores/user.store";
+import type { IPaginateDto } from "~/types/dto/paginate.dto";
 import { sortType, Status } from "~/types/enum/paginate.enum";
-const onSearch = (e:Event) => {
-  console.log(e)
-};
+
 const route = useRoute();
 const router = useRouter();
-const query = reactive({
-  page: route.query.page ? Number(route.query.page) : 1,
-  limit: route.query.limit ? Number(route.query.limit) : 10,
-  search: route.query.search ? String(route.query.search) : "",
-  sort: route.query.sort
-    ? (String(route.query.sort) as sortType)
-    : sortType.ASC,
-  is_active: route.query.is_active
-    ? (String(route.query.is_active) as Status)
-    : Status.ACTIVE,
-});
-if (!route.query.page) {
-  router.replace({
-    query: {
-      page: query.page.toString(),
-      limit: query.limit.toString(),
-      search: query.search,
-      sort: query.sort,
-      is_active: query.is_active,
-    },
-  });
-}
 const store = useUserStore();
 const { findAll } = useUser();
+
+/* -----------------------------------
+   INITIAL QUERY (from URL)
+----------------------------------- */
+const query = reactive<IPaginateDto>({
+  page: Number(route.query.page ?? 1),
+  limit: Number(route.query.limit ?? 10),
+  search: String(route.query.search ?? ""),
+  sort: (route.query.sort as sortType) ?? sortType.ASC,
+  is_active: (route.query.is_active as Status) ?? Status.ACTIVE,
+});
+
+if (!route.query.page) {
+  router.replace({ query: { ...query } });
+}
+
+/* -----------------------------------
+   HELPERS
+----------------------------------- */
+const updateUrl = () => {
+  router.replace({ query: { ...query } });
+};
+
+const load = async () => {
+  await findAll({ ...query });
+};
+
+/* -----------------------------------
+   QUERY UPDATER
+----------------------------------- */
+const onQuery = {
+  search: async (value: string) => {
+    query.search = value;
+    query.page = 1;
+    updateUrl();
+    await load();
+  },
+
+  sort: async (value: sortType) => {
+    query.sort = value;
+    query.page = 1;
+    updateUrl();
+    await load();
+  },
+
+  checked: async (value: Status) => {
+    query.is_active = value;
+    query.page = 1;
+    updateUrl();
+    await load();
+  },
+
+  page: async (page: number, limit: number) => {
+    query.page = page;
+    query.limit = limit;
+    updateUrl();
+    await load();
+  },
+};
+
+/* -----------------------------------
+   SYNC URL WHEN QUERY CHANGES
+----------------------------------- */
+watch(
+  () => ({ ...query }),
+  () => updateUrl()
+);
+
+/* -----------------------------------
+   FIRST LOAD
+----------------------------------- */
+await load();
+
+/* -----------------------------------
+   TABLE SELECTION
+----------------------------------- */
 const selectedUsers = ref([]);
-await findAll();
 </script>

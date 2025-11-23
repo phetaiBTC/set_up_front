@@ -27,21 +27,22 @@
             aria-label="Toggle Status"
             @change="
               emit('onChangeSort', {
-                sort: sort ? sortType.ASC : sortType.DESC,
+                sort: sort === sortType.DESC ? sortType.ASC : sortType.DESC,
               })
             "
           />
           <ToggleButton
             :value="checked"
             @update:value="emit('update:checked', $event)"
-            onIcon="pi pi-check"
-            :off-label="$t('inactive')"
-            :on-label="$t('active')"
-            offIcon="pi pi-trash"
+            onIcon="pi pi-trash"
+            :off-label="$t('active')"
+            :on-label="$t('inactive')"
+            offIcon="pi pi-check"
             aria-label="Toggle Status"
             @change="
-              emit('onChangeChecked', {
-                is_active: checked ? Status.ACTIVE : Status.INACTIVE,
+              emit('onChangeActive', {
+                is_active:
+                  checked === Status.INACTIVE ? Status.ACTIVE : Status.INACTIVE,
               })
             "
           />
@@ -138,7 +139,7 @@
     :first="(query.page! - 1) * query.limit!"
     :rows="query.limit"
     :totalRecords="data.pagination.total"
-    :rowsPerPageOptions="[5, 10, 20, 30]"
+    :rowsPerPageOptions="[1, 5, 10, 20, 30]"
     @page="emit('onChangePage', { page: $event.page + 1, limit: $event.rows })"
   />
 </template>
@@ -154,8 +155,8 @@ const props = defineProps<{
   value: IUserEntity[];
   title: string;
   loading: boolean;
-  sort: sortType;
-  checked: Status;
+  sort?: sortType;
+  checked?: Status;
   query: IPaginateDto;
 }>();
 
@@ -164,7 +165,7 @@ const emit = defineEmits([
   "update:sort",
   "update:checked",
   "onChangeSort",
-  "onChangeChecked",
+  "onChangeActive",
   "onChangePage",
   "onSearch",
 ]);

@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import AppConfigurator from '~/components/layouts/AppConfigurator.vue';
+import AppConfigurator from "~/components/layouts/AppConfigurator.vue";
 
 const { toggleDarkMode, isDarkTheme } = useLayout();
 </script>
