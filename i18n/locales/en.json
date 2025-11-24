@@ -44,5 +44,8 @@
   "verify":"Verify",
   "sendVerify":"Send verify",
   "send":"Send",
-  "confirm":"Confirm"
+  "confirm":"Confirm",
+  "permissions":"Permissions",
+  "permission":"Permission",
+  "changePassword":"Change password"
 }

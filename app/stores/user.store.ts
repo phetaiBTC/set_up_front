@@ -16,7 +16,17 @@ export const useUserStore = defineStore("user", () => {
     },
   });
   const userOptions = ref<IOptionEntity[]>([]);
-  const user = ref<IUserEntity>();
+  const user = ref<IUserEntity>({
+    id: 0,
+    username: "",
+    email: "",
+    roles: [],
+    permissions: [],
+    is_verified: false,
+    createdAt: "",
+    updatedAt: "",
+    deletedAt: "",
+  });
 
   const setUserOptions = (value: IOptionEntity[]) => {
     userOptions.value = value;

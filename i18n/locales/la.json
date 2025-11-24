@@ -44,5 +44,8 @@
   "verify": "ຢືນຢັນ",
   "sendVerify": "ສົ່ງຄຳຢືນຢັນ",
   "send": "ສົ່ງ",
-  "confirm":"ຢືນຢັນ"
+  "confirm":"ຢືນຢັນ",
+  "permissions":"ສິດການນຳໃຊ້",
+  "permission":"ສິດການນຳໃຊ້",
+  "changePassword":"ປ່ຽນລະຫັດຜ່ານ"
 }

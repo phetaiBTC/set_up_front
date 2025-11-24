@@ -128,7 +128,11 @@ const confirmLogout = () => {
             <i class="pi pi-inbox"></i>
             <span>Messages</span>
           </button>
-          <button type="button" class="layout-topbar-action">
+          <button
+            type="button"
+            class="layout-topbar-action"
+            @click="navigateTo('/profile')"
+          >
             <i class="pi pi-user"></i>
             <span>Profile</span>
           </button>

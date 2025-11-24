@@ -1,10 +1,16 @@
-import type { ILoginDto, IRegisterDto } from "~/types/dto/auth.dto";
+import type {
+  IChangePasswordDto,
+  ILoginDto,
+  IRegisterDto,
+} from "~/types/dto/auth.dto";
+import type { IUserEntity } from "~/types/entities/user.entity";
 
 export const useAuth = () => {
   const store = useAuthStore();
   const { setLoading } = store;
   const { loading } = storeToRefs(store);
   const toast = useToast();
+  const { setUser } = useUserStore();
   const { run } = useFormHandler();
 
   const login = async (loginDto: ILoginDto) => {
@@ -90,10 +96,28 @@ export const useAuth = () => {
     }, setLoading);
   };
 
+  const profile = async () => {
+    await run(async () => {
+      const res = await useApi().get<IUserEntity>("/auth/profile");
+      setUser(res);
+    }, setLoading);
+  };
+
+  const changePassword = async (changePasswordDto: IChangePasswordDto) => {
+    await run(async () => {
+      await useApi().patch("/user/change-password", changePasswordDto);
+      toast.add({
+        severity: "success",
+        summary: "Success",
+        detail: "Change password success",
+        life: 3000,
+      });
+    }, setLoading);
+  };
+
   const logout = () => {
     const token = useCookie("access_token", { path: "/" });
     token.value = null;
-
     navigateTo("/login");
   };
 
@@ -106,5 +130,7 @@ export const useAuth = () => {
     verify,
     sendVerify,
     sendPassword,
+    profile,
+    changePassword,
   };
 };

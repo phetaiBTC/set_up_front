@@ -5,7 +5,7 @@
         <div>
           <span class="block text-xl font-medium mb-4">{{ $t(title) }}</span>
           <span class="text-primary text-xl font-medium mr-2">{{ count }}</span>
-          <span class="text-muted-color">{{ $t(type) }}</span>
+          <span v-if="type" class="text-muted-color">{{ $t(type) }}</span>
         </div>
         <div
           class="flex items-center justify-center rounded-border border-2 text-primary"
@@ -21,7 +21,7 @@
 defineProps<{
   title: string;
   count: number;
-  type: string;
+  type?: string;
   icon: string;
 }>();
 </script>

@@ -14,5 +14,11 @@ export const RegisterDto = z
     message: "Password does not match",
     path: ["confirm_password"],
   });
+
+export const ChangePasswordDto = z.object({
+  oldPassword: z.string().nonempty("Password is required"),
+  newPassword: z.string().nonempty("Password is required"),
+});
 export type ILoginDto = z.infer<typeof LoginDto>;
 export type IRegisterDto = z.infer<typeof RegisterDto>;
+export type IChangePasswordDto = z.infer<typeof ChangePasswordDto>;
