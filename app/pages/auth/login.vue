@@ -19,6 +19,7 @@
         class="w-full"
         :loading="loading"
       />
+      <NuxtLink to="/auth/register">{{ $t("register") }}</NuxtLink>
     </Form>
   </div>
 </template>

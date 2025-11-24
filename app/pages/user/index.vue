@@ -12,34 +12,64 @@
       <!-- User Table -->
       <div class="col-span-12">
         <div class="card">
-          <Toolbar class="mb-6">
-            <template #start>
-              <Button
-                label="New"
-                icon="pi pi-plus"
-                severity="secondary"
-                class="mr-2"
-              />
-              <Button label="Delete" icon="pi pi-trash" severity="secondary" />
-            </template>
-            <template #end>
-              <Button label="Export" icon="pi pi-upload" severity="secondary" />
-            </template>
-          </Toolbar>
+          <Tabs value="table">
+            <TabList>
+              <Tab value="table">{{ $t("table") }}</Tab>
+              <Tab value="card">{{ $t("card") }}</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel value="table">
+                <Toolbar class="mb-6">
+                  <template #start>
+                    <Button
+                      label="New"
+                      icon="pi pi-plus"
+                      severity="secondary"
+                      class="mr-2"
+                    />
+                    <Button
+                      label="Delete"
+                      icon="pi pi-trash"
+                      severity="secondary"
+                    />
+                  </template>
+                  <template #end>
+                    <Button
+                      label="Export"
+                      icon="pi pi-upload"
+                      severity="secondary"
+                    />
+                  </template>
+                </Toolbar>
 
-          <UserTable
-            title="user"
-            :loading="store.loading"
-            :data="store.userList"
-            :sort="query.sort"
-            :checked="query.is_active"
-            v-model:value="selectedUsers"
-            :query="query"
-            @on-search="onQuery.search($event)"
-            @on-change-sort="onQuery.sort($event.sort)"
-            @on-change-active="onQuery.checked($event.is_active)"
-            @on-change-page="onQuery.page($event.page, $event.limit)"
-          />
+                <UserTable
+                  title="user"
+                  :loading="store.loading"
+                  :data="store.userList"
+                  :sort="query.sort"
+                  :checked="query.is_active"
+                  v-model:value="selectedUsers"
+                  :query="query"
+                  @on-search="onQuery.search($event)"
+                  @on-change-sort="onQuery.sort($event.sort)"
+                  @on-change-active="onQuery.checked($event.is_active)"
+                  @on-change-page="onQuery.page($event.page, $event.limit)"
+                />
+              </TabPanel>
+              <TabPanel value="card">
+                <p class="m-0">
+                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+                  accusantium doloremque laudantium, totam rem aperiam, eaque
+                  ipsa quae ab illo inventore veritatis et quasi architecto
+                  beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem
+                  quia voluptas sit aspernatur aut odit aut fugit, sed quia
+                  consequuntur magni dolores eos qui ratione voluptatem sequi
+                  nesciunt. Consectetur, adipisci velit, sed quia non numquam
+                  eius modi.
+                </p>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </div>
       </div>
     </div>

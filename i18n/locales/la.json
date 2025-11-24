@@ -36,5 +36,9 @@
   "deletedAt": "ລຶບເມື່ອ",
   "inactive":"ອອກວຽກ",
   "active":"ໃຊ້ງານ",
-  "status":"ສະຖານະ"
+  "status":"ສະຖານະ",
+  "is_required": "ບໍ່ໃຫ້ວ່າງ",
+  "confirm_password":"ຢືນຢັນລະຫັດຜ່ານ",
+  "forgot_password":"ລືມລະຫັດຜ່ານ",
+  "reset_password":"ຕັດສິນຄ້າຜ່ານ"
 }

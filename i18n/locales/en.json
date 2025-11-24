@@ -36,5 +36,9 @@
   "deletedAt": "Deleted at",
   "inactive": "Inactive",
   "active": "Active",
-  "status":"Status"
+  "status":"Status",
+  "is_required": "is required",
+  "confirm_password": "Confirm password",
+  "forgot_password":"Forgot password",
+  "reset_password":"Reset password"
 }

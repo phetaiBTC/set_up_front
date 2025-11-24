@@ -1,12 +1,17 @@
 <template>
-  <FormField v-slot="$field" :name="name" class="flex flex-col gap-1 flex-1">
-    <FloatLabel variant="on">
+  <FormField
+    v-slot="$field"
+    :name="name"
+    class="flex flex-col gap-1 flex-1"
+    style="width: 100%"
+  >
+    <FloatLabel variant="on" class="w-full">
       <IconField>
         <InputIcon :class="icon" v-if="icon" />
         <InputText
           v-bind="$field"
           v-model="innerValue"
-          class="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary transition"
+          class="w-full rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary transition"
         />
       </IconField>
       <label>{{ $t(label) }}</label>

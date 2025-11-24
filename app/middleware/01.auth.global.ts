@@ -1,8 +1,8 @@
 export default defineNuxtRouteMiddleware((to, from) => {
   const token = useCookie("access_token");
-
+  console.log(token);
   // หน้า public (ไม่ต้อง login)
-  const publicPages = ["/auth/login", "/auth/register"];
+  const publicPages = ["/auth/login", "/auth/register","/verify"];
   const isPublic = publicPages.includes(to.path);
 
   // ถ้าไม่มี token และไม่ใช่หน้า public → redirect ไป login

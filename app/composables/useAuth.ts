@@ -1,18 +1,22 @@
-import type { ILoginDto } from "~/types/dto/auth.dto";
+import type { ILoginDto, IRegisterDto } from "~/types/dto/auth.dto";
 
 export const useAuth = () => {
   const store = useAuthStore();
+  const { setLoading } = store;
+  const { loading } = storeToRefs(store);
+
   const toast = useToast();
+  const { run } = useFormHandler();
+
   const login = async (loginDto: ILoginDto) => {
-    try {
-      store.setLoading(true);
+    await run(async () => {
       const res = await useApi().post<{ access_token: string }>(
         "/auth/login",
         loginDto
       );
       if (res.access_token) {
-        const accessToken = useCookie("access_token");
-        accessToken.value = res.access_token;
+        const token = useCookie("access_token", { path: "/" });
+        token.value = res.access_token;
       }
       toast.add({
         severity: "success",
@@ -20,24 +24,30 @@ export const useAuth = () => {
         detail: "Login success",
         life: 3000,
       });
+
       navigateTo("/");
-    } catch (err: any) {
+    }, setLoading);
+  };
+
+  const register = async (registerDto: IRegisterDto) => {
+    await run(async () => {
+      await useApi().post("/auth/register", registerDto);
       toast.add({
-        severity: "error",
-        summary: "Error",
-        detail: err.response.data.message,
+        severity: "success",
+        summary: "Success",
+        detail: "Register success",
         life: 3000,
       });
-      throw err;
-    } finally {
-      store.setLoading(false);
-    }
+      navigateTo("/auth/login");
+    }, setLoading);
   };
 
   const logout = () => {
-    useCookie("access_token").value = null;
+    const token = useCookie("access_token", { path: "/" });
+    token.value = null;
+
     navigateTo("/login");
   };
 
-  return { login, logout };
+  return { login, register, loading, logout };
 };
