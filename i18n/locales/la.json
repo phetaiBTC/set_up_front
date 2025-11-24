@@ -34,11 +34,15 @@
   "manage": "ຈັດການ",
   "search": "ຄົ້ນຫາ",
   "deletedAt": "ລຶບເມື່ອ",
-  "inactive":"ອອກວຽກ",
-  "active":"ໃຊ້ງານ",
-  "status":"ສະຖານະ",
+  "inactive": "ອອກວຽກ",
+  "active": "ໃຊ້ງານ",
+  "status": "ສະຖານະ",
   "is_required": "ບໍ່ໃຫ້ວ່າງ",
-  "confirm_password":"ຢືນຢັນລະຫັດຜ່ານ",
-  "forgot_password":"ລືມລະຫັດຜ່ານ",
-  "reset_password":"ຕັດສິນຄ້າຜ່ານ"
+  "confirm_password": "ຢືນຢັນລະຫັດຜ່ານ",
+  "forgot_password": "ລືມລະຫັດຜ່ານ",
+  "reset_password": "ປ່ຽນລະຫັດຜ່ານ",
+  "verify": "ຢືນຢັນ",
+  "sendVerify": "ສົ່ງຄຳຢືນຢັນ",
+  "send": "ສົ່ງ",
+  "confirm":"ຢືນຢັນ"
 }

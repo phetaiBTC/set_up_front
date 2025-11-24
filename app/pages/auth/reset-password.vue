@@ -4,20 +4,15 @@
       :resolver="resolver"
       class="flex flex-col gap-3 justify-center items-center"
       :initialValues="formState"
-      @submit="register(formState)"
+      @submit="
+        resetPassword(
+          token as string,
+          formState.password,
+          formState.confirm_password
+        )
+      "
     >
-      <h1>{{ $t("signup") }}</h1>
-      <ui-input
-        name="username"
-        label="username"
-        v-model="formState.username"
-      ></ui-input>
-      <ui-input name="email" label="email" v-model="formState.email"></ui-input>
-      <!-- <ui-input
-        name="password"
-        label="password"
-        v-model=""
-      ></ui-input> -->
+      <h1>{{ $t("reset_password") }}</h1>
       <FormField
         v-slot="$field"
         name="password"
@@ -66,14 +61,14 @@
         </Message>
       </FormField>
       <Button
-        :label="$t('signup')"
+        :label="$t('confirm')"
         type="submit"
         class="w-full"
         :loading="loading"
       />
       <div class="justify-between w-full flex">
         <NuxtLink to="/auth/login">{{ $t("login") }}</NuxtLink>
-        <NuxtLink to="/verify/sendVerify" style="text-decoration: underline">{{
+        <NuxtLink to="/auth/forgot" style="text-decoration: underline">{{
           $t("sendVerify")
         }}</NuxtLink>
       </div>
@@ -84,15 +79,17 @@
 <script setup lang="ts">
 definePageMeta({
   layout: "auth",
-  name: "Register",
 });
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { type IRegisterDto, RegisterDto } from "~/types/dto/auth.dto";
-const { register } = useAuth();
+const { resetPassword } = useAuth();
+const route = useRoute();
+const token = route.query.token;
+if (!token) {
+  navigateTo("/auth/login");
+}
 const { loading } = storeToRefs(useAuthStore());
-const formState = reactive<IRegisterDto>({
-  username: "phetaibtc",
-  email: "phetaibtc@gmail.com",
+const formState = reactive<Omit<IRegisterDto, "username" | "email">>({
   password: "11111111",
   confirm_password: "11111111",
 });

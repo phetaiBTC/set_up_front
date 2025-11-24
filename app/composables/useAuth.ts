@@ -4,7 +4,6 @@ export const useAuth = () => {
   const store = useAuthStore();
   const { setLoading } = store;
   const { loading } = storeToRefs(store);
-
   const toast = useToast();
   const { run } = useFormHandler();
 
@@ -38,7 +37,56 @@ export const useAuth = () => {
         detail: "Register success",
         life: 3000,
       });
+    }, setLoading);
+  };
+
+  const verify = async (token: string) => {
+    // console.log(token);
+    await run(async () => {
+      await useApi().patch(`/user/verify-email?token=${token}`);
       navigateTo("/auth/login");
+    }, setLoading);
+  };
+
+  const sendVerify = async (email: string) => {
+    await run(async () => {
+      await useApi().post("/user/resend-mail-verify", {
+        email,
+      });
+      toast.add({
+        severity: "success",
+        summary: "Success",
+        detail: "send success",
+        life: 3000,
+      });
+    }, setLoading);
+  };
+
+  const resetPassword = async (
+    token: string,
+    password: string,
+    confirm_password: string
+  ) => {
+    await run(async () => {
+      await useApi().patch(`/user/reset-password?token=${token}`, {
+        password,
+        confirm_password,
+      });
+      navigateTo("/auth/login");
+    }, setLoading);
+  };
+
+  const sendPassword = async (email: string) => {
+    await run(async () => {
+      await useApi().post("/user/send-password", {
+        email,
+      });
+      toast.add({
+        severity: "success",
+        summary: "Success",
+        detail: "send success",
+        life: 3000,
+      });
     }, setLoading);
   };
 
@@ -49,5 +97,14 @@ export const useAuth = () => {
     navigateTo("/login");
   };
 
-  return { login, register, loading, logout };
+  return {
+    login,
+    register,
+    loading,
+    logout,
+    resetPassword,
+    verify,
+    sendVerify,
+    sendPassword,
+  };
 };

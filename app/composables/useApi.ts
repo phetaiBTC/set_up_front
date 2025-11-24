@@ -24,5 +24,7 @@ export const useApi = () => {
       request<T>("PUT", url, { body, ...options }),
     delete: <T>(url: string, options?: any) =>
       request<T>("DELETE", url, options),
+    patch: <T>(url: string, body?: any, options?: any) =>
+      request<T>("PATCH", url, { body, ...options }),
   };
 };

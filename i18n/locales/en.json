@@ -40,5 +40,9 @@
   "is_required": "is required",
   "confirm_password": "Confirm password",
   "forgot_password":"Forgot password",
-  "reset_password":"Reset password"
+  "reset_password":"Reset password",
+  "verify":"Verify",
+  "sendVerify":"Send verify",
+  "send":"Send",
+  "confirm":"Confirm"
 }

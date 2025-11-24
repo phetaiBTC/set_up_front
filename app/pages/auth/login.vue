@@ -8,18 +8,42 @@
     >
       <h1>{{ $t("signin") }}</h1>
       <ui-input name="email" label="email" v-model="formState.email"></ui-input>
-      <ui-input
+      <FormField
+        v-slot="$field"
         name="password"
-        label="password"
-        v-model="formState.password"
-      ></ui-input>
+        class="flex flex-col gap-1 flex-1 w-full"
+      >
+        <FloatLabel variant="on" class="w-full">
+          <IconField class="w-full">
+            <Password
+              v-model="formState.password"
+              toggleMask
+              :feedback="false"
+              class="w-full"
+            />
+          </IconField>
+          <label>{{ $t("password") }}</label>
+        </FloatLabel>
+
+        <Message
+          v-if="$field.invalid"
+          severity="error"
+          size="small"
+          class="mt-1"
+        >
+          {{ $t($field.error?.message || "Invalid") }}
+        </Message>
+      </FormField>
       <Button
         :label="$t('signin')"
         type="submit"
         class="w-full"
         :loading="loading"
       />
-      <NuxtLink to="/auth/register">{{ $t("register") }}</NuxtLink>
+      <div class="justify-between w-full flex">
+        <NuxtLink to="/auth/forgot">{{ $t("forgot_password") }}</NuxtLink>
+        <NuxtLink to="/auth/register">{{ $t("register") }}</NuxtLink>
+      </div>
     </Form>
   </div>
 </template>
